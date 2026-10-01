@@ -29,6 +29,7 @@ export function ExplorerApp() {
   const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<Set<string>>(() => new Set());
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
+  const [hillExpiresAt, setHillExpiresAt] = useState<number | null>(null);
 
   const load = useCallback(async (activeTab: TabId) => {
     setLoading(true);
@@ -41,6 +42,7 @@ export function ExplorerApp() {
       const body = (await res.json()) as {
         coins?: EnrichedCoin[];
         hill?: EnrichedCoin | null;
+        hillExpiresAt?: number | null;
         error?: string;
         fetchedAt?: number;
       };
@@ -48,7 +50,8 @@ export function ExplorerApp() {
         throw new Error(body.error ?? "Failed to load coins");
       }
       setCoins(body.coins ?? []);
-      setHill(body.hill ?? body.coins?.[0] ?? null);
+      setHill(body.hill ?? null);
+      setHillExpiresAt(body.hillExpiresAt ?? null);
       setFetchedAt(body.fetchedAt ?? Date.now());
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load coins");
@@ -150,8 +153,9 @@ export function ExplorerApp() {
                   <span className="text-white/45">${hill.symbol}</span>
                 </h1>
                 <p className="mt-1 max-w-2xl text-sm text-white/55">
-                  Live pump.fun leader by 24h volume in this feed. $KOTH creator
-                  fees will buy back into this coin while it holds the hill.
+                  Crowned from coins at or under $200K market cap (top 24h volume
+                  in this feed). While on the hill for 10 minutes, market cap can
+                  run above $200K. $KOTH creator fees buy back into this coin.
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -168,6 +172,11 @@ export function ExplorerApp() {
                   <p className="text-lg font-semibold text-[#39ff14]">
                     {formatUsd(hill.marketCapUsd)}
                   </p>
+                  {hillExpiresAt ? (
+                    <p className="text-xs text-white/45">
+                      Hill time left: {formatHillTimeLeft(hillExpiresAt)}
+                    </p>
+                  ) : null}
                   <a
                     href={hill.pumpUrl}
                     target="_blank"
@@ -200,7 +209,7 @@ export function ExplorerApp() {
             ))}
             <span className="ml-auto text-xs text-white/35">
               {fetchedAt
-                ? `Updated ${formatAge(fetchedAt)} ago · pump.fun`
+                ? `Updated ${formatAge(fetchedAt)} ago · pump.fun · leaderboard max $200K mcap`
                 : "Loading pump.fun..."}
             </span>
           </div>
@@ -422,6 +431,13 @@ function HeadsetIcon() {
       <path d="M4 14v3a2 2 0 0 0 2 2h1v-5H4zM20 14v3a2 2 0 0 1-2 2h-1v-5h3z" />
     </svg>
   );
+}
+
+function formatHillTimeLeft(expiresAt: number): string {
+  const ms = expiresAt - Date.now();
+  if (ms <= 0) return "0m";
+  const minutes = Math.ceil(ms / 60_000);
+  return `${minutes}m`;
 }
 
 function StarIcon({ filled }: { filled: boolean }) {

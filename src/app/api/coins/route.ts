@@ -1,4 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { resolveHill } from "@/lib/hill-state";
+import {
+  MAX_LEADERBOARD_MARKET_CAP_USD,
+  isEligibleLeaderboardMarketCap,
+} from "@/lib/koth-rules";
 import {
   PUMP_API,
   type CoinSort,
@@ -174,23 +179,23 @@ export async function GET(request: NextRequest) {
 
     if (sort === "market_cap") {
       enriched.sort((a, b) => b.marketCapUsd - a.marketCapUsd);
-      enriched.forEach((c, i) => {
-        c.rank = offset + i + 1;
-      });
     }
 
-    const hill =
-      enriched.reduce<EnrichedCoin | null>((best, coin) => {
-        if (!best) return coin;
-        const vol = coin.stats.volume24h ?? 0;
-        const bestVol = best.stats.volume24h ?? 0;
-        if (vol !== bestVol) return vol > bestVol ? coin : best;
-        return coin.marketCapUsd > best.marketCapUsd ? coin : best;
-      }, null) ?? enriched[0] ?? null;
+    const eligible = enriched.filter((coin) =>
+      isEligibleLeaderboardMarketCap(coin.marketCapUsd),
+    );
+    eligible.forEach((coin, index) => {
+      coin.rank = offset + index + 1;
+    });
+
+    const { hill, crownedAt, expiresAt } = resolveHill(enriched, eligible);
 
     return NextResponse.json({
-      coins: enriched,
+      coins: eligible,
       hill,
+      hillCrownedAt: crownedAt,
+      hillExpiresAt: expiresAt,
+      maxLeaderboardMarketCapUsd: MAX_LEADERBOARD_MARKET_CAP_USD,
       fetchedAt: Date.now(),
       source: "pump.fun",
     });
