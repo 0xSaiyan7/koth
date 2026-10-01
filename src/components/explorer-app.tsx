@@ -116,15 +116,15 @@ export function ExplorerApp() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="border-b border-white/5 px-4 py-3 md:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Image src="/logo.png" alt="KOTH" width={36} height={36} className="rounded-md" />
-              <div className="hidden sm:block">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex shrink-0 items-center gap-2">
+              <Image src="/logo.png" alt="KOTH" width={32} height={32} className="rounded-md" />
+              <div>
                 <p className="text-sm font-semibold tracking-tight">KOTH</p>
                 <p className="text-[11px] text-white/45">King Of The Hill</p>
               </div>
             </div>
-            <div className="mx-auto w-full max-w-xl">
+            <div className="w-full sm:max-w-xl sm:ml-auto">
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -132,66 +132,79 @@ export function ExplorerApp() {
                 className="w-full rounded-full border border-white/10 bg-[#141414] px-4 py-2.5 text-sm text-white placeholder:text-white/35 outline-none focus:border-[#39ff14]/50"
               />
             </div>
-            <button
-              type="button"
-              className="hidden rounded-lg border border-[#39ff14]/60 px-4 py-2 text-sm font-medium text-[#39ff14] sm:block"
-            >
-              Sign in
-            </button>
           </div>
         </header>
 
-        {hill ? (
-          <section className="border-b border-[#39ff14]/15 bg-gradient-to-r from-[#39ff14]/10 via-transparent to-transparent px-4 py-4 md:px-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-widest text-[#39ff14]">
-                  On the hill
-                </p>
-                <h1 className="mt-1 text-lg font-semibold md:text-xl">
-                  {hill.name}{" "}
-                  <span className="text-white/45">${hill.symbol}</span>
-                </h1>
-                <p className="mt-1 max-w-2xl text-sm text-white/55">
-                  Crowned from coins at or under $200K market cap (top 24h volume
-                  in this feed). While on the hill for 10 minutes, market cap can
-                  run above $200K. $KOTH creator fees buy back into this coin.
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                {hill.image_uri ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={hill.image_uri}
-                    alt=""
-                    className="h-14 w-14 rounded-full border border-[#39ff14]/30 object-cover"
-                  />
-                ) : null}
-                <div className="text-right">
-                  <p className="text-sm text-white/45">Market cap</p>
-                  <p className="text-lg font-semibold text-[#39ff14]">
-                    {formatUsd(hill.marketCapUsd)}
-                  </p>
-                  {hillExpiresAt ? (
-                    <p className="text-xs text-white/45">
-                      Hill time left: {formatHillTimeLeft(hillExpiresAt)}
+        <main className="flex-1 px-4 py-5 md:px-6 md:py-6">
+          {hill ? (
+            <section className="mb-6 overflow-hidden rounded-2xl border border-[#39ff14]/35 bg-[#0f120f] shadow-[0_0_48px_-12px_rgba(57,255,20,0.35)]">
+              <div className="border-b border-[#39ff14]/20 bg-gradient-to-r from-[#39ff14]/20 via-[#39ff14]/5 to-transparent px-5 py-3 md:px-8 md:py-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Image src="/logo.png" alt="" width={40} height={40} className="rounded-lg" />
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#39ff14]">
+                      King Of The Hill
                     </p>
+                    <p className="text-sm text-white/70">Live pump.fun coin holding the hill</p>
+                  </div>
+                  {hillExpiresAt ? (
+                    <span className="ml-auto rounded-full border border-[#39ff14]/40 bg-[#39ff14]/10 px-3 py-1 text-sm font-medium text-[#39ff14]">
+                      {formatHillTimeLeft(hillExpiresAt)} left
+                    </span>
                   ) : null}
-                  <a
-                    href={hill.pumpUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-1 inline-block text-xs text-white/60 underline-offset-2 hover:text-white hover:underline"
-                  >
-                    View on pump.fun
-                  </a>
                 </div>
               </div>
-            </div>
-          </section>
-        ) : null}
-
-        <main className="flex-1 px-4 py-4 md:px-6">
+              <div className="flex flex-col gap-6 px-5 py-6 md:flex-row md:items-center md:justify-between md:px-8 md:py-8">
+                <div className="flex min-w-0 items-start gap-4 md:gap-6">
+                  {hill.image_uri ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={hill.image_uri}
+                      alt=""
+                      className="h-20 w-20 shrink-0 rounded-2xl border-2 border-[#39ff14]/50 object-cover shadow-lg md:h-28 md:w-28"
+                    />
+                  ) : (
+                    <div className="h-20 w-20 shrink-0 rounded-2xl border-2 border-[#39ff14]/30 bg-[#1a1a1a] md:h-28 md:w-28" />
+                  )}
+                  <div className="min-w-0">
+                    <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-4xl">
+                      {hill.name}
+                    </h1>
+                    <p className="mt-1 text-lg text-[#39ff14] md:text-xl">${hill.symbol}</p>
+                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/60 md:text-base">
+                      Crowned from coins at or under $200K market cap by 24h volume.
+                      For 10 minutes on the hill, market cap can run above $200K.
+                      $KOTH creator fees buy back into this coin.
+                    </p>
+                    <a
+                      href={hill.pumpUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-flex items-center rounded-lg bg-[#39ff14] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#5dff3f]"
+                    >
+                      Trade on pump.fun
+                    </a>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 md:min-w-[220px] md:grid-cols-1">
+                  <div className="rounded-xl border border-white/10 bg-black/40 px-4 py-3">
+                    <p className="text-xs uppercase tracking-wide text-white/45">Market cap</p>
+                    <p className="mt-1 text-xl font-bold text-[#39ff14] md:text-2xl">
+                      {formatUsd(hill.marketCapUsd)}
+                    </p>
+                  </div>
+                  {hill.stats.volume24h !== undefined ? (
+                    <div className="rounded-xl border border-white/10 bg-black/40 px-4 py-3">
+                      <p className="text-xs uppercase tracking-wide text-white/45">24h volume</p>
+                      <p className="mt-1 text-xl font-bold text-white md:text-2xl">
+                        {formatUsd(hill.stats.volume24h)}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </section>
+          ) : null}
           <div className="mb-4 flex flex-wrap items-center gap-2">
             {(Object.keys(TAB_SORT) as TabId[]).map((id) => (
               <button
